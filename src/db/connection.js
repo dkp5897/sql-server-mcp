@@ -10,44 +10,28 @@ async function getPool() {
     return pool;
   }
 
-  const rawServer = process.env.DB_SERVER || process.env.SQL_SERVER || "localhost";
-  let server = rawServer;
-  let instanceName = process.env.DB_INSTANCE || process.env.SQL_INSTANCE || null;
-
-  // Handle named instances like "SERVERNAME\SQLEXPRESS" or "localhost\SQLEXPRESS"
-  if (rawServer.includes("\\")) {
-    const parts = rawServer.split("\\");
-    server = parts[0];
-    instanceName = parts[1];
-  }
-
+  const server = process.env.DB_SERVER || process.env.SQL_SERVER || "localhost";
   const database = process.env.DB_NAME || process.env.SQL_DATABASE || "master";
   const user = process.env.DB_USER || process.env.SQL_USER || "sa";
   const password = process.env.DB_PASSWORD || process.env.SQL_PASSWORD || "";
+  const port = parseInt(process.env.DB_PORT || process.env.SQL_PORT || "1433", 10);
   const trustServerCertificate = process.env.DB_TRUST_CERT !== "false";
   const encrypt = process.env.DB_ENCRYPT === "true";
 
   const config = {
     server,
+    port,
     database,
     user,
     password,
     options: {
       trustServerCertificate,
       encrypt,
-      ...(instanceName ? { instanceName } : {}),
     },
     pool: { max: 10, min: 0, idleTimeoutMillis: 30000 },
     requestTimeout: 60000,
-    connectionTimeout: 30000,
+    connectionTimeout: 15000,
   };
-
-  // Only pass explicit port if set in env, or default to 1433 for non-named instances
-  if (process.env.DB_PORT || process.env.SQL_PORT) {
-    config.port = parseInt(process.env.DB_PORT || process.env.SQL_PORT, 10);
-  } else if (!instanceName) {
-    config.port = 1433;
-  }
 
   pool = new sql.ConnectionPool(config);
   await pool.connect();

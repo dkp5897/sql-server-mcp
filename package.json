@@ -1,6 +1,6 @@
 {
   "name": "sql-server-mcp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "SQL Server MCP Server for Antigravity — environment-configured dev debugging & data repair",
   "main": "src/index.js",
   "bin": {
