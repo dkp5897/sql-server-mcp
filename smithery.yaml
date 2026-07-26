@@ -1,0 +1,40 @@
+# smithery.yaml — Smithery.ai MCP Server Deployment Manifest
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - DB_SERVER
+      - DB_NAME
+      - DB_USER
+      - DB_PASSWORD
+    properties:
+      DB_SERVER:
+        type: string
+        description: "SQL Server host or instance name (e.g. localhost or 192.168.1.10)"
+      DB_NAME:
+        type: string
+        description: "Database name (e.g. MyDatabase)"
+      DB_USER:
+        type: string
+        description: "SQL Server login username (e.g. sa)"
+      DB_PASSWORD:
+        type: string
+        description: "SQL Server login password"
+      DB_PORT:
+        type: string
+        description: "SQL Server TCP port (default: 1433)"
+      DB_TRUST_CERT:
+        type: string
+        description: "Trust self-signed certificate (true/false, default: true)"
+  command: npx
+  args:
+    - "-y"
+    - "sql-server-mcp"
+  env:
+    DB_SERVER: "${config.DB_SERVER}"
+    DB_NAME: "${config.DB_NAME}"
+    DB_USER: "${config.DB_USER}"
+    DB_PASSWORD: "${config.DB_PASSWORD}"
+    DB_PORT: "${config.DB_PORT}"
+    DB_TRUST_CERT: "${config.DB_TRUST_CERT}"
