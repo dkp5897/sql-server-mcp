@@ -1,0 +1,29 @@
+{
+  "name": "sql-server-mcp",
+  "version": "1.0.3",
+  "description": "SQL Server MCP Server for Antigravity — environment-configured dev debugging & data repair",
+  "main": "src/index.js",
+  "bin": {
+    "sql-server-mcp": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "sql-server",
+    "antigravity",
+    "mssql",
+    "debugging"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.13.0",
+    "mssql": "^11.0.1"
+  }
+}

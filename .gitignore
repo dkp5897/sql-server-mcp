@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+connections.json
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
