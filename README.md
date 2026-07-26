@@ -14,7 +14,7 @@ Configure the server directly inside your Antigravity (or any MCP client) config
   "mcpServers": {
     "sql-server-mcp": {
       "command": "npx",
-      "args": ["-y", "sql-server-mcp"],
+      "args": ["-y", "@dkp5897/sql-server-mcp"],
       "env": {
         "DB_SERVER": "localhost",
         "DB_NAME": "YourDatabaseName",

@@ -1,5 +1,5 @@
 {
-  "name": "sql-server-mcp",
+  "name": "@dkp5897/sql-server-mcp",
   "version": "1.0.5",
   "description": "SQL Server MCP Server for Antigravity — environment-configured dev debugging & data repair",
   "main": "src/index.js",
@@ -8,6 +8,7 @@
   },
   "files": [
     "src",
+    "smithery.yaml",
     "README.md"
   ],
   "scripts": {
@@ -15,6 +16,7 @@
   },
   "keywords": [
     "mcp",
+    "mcp-server",
     "model-context-protocol",
     "sql-server",
     "antigravity",
