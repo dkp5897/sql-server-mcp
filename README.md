@@ -17,7 +17,7 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
   "mcpServers": {
     "sql-server-mcp": {
       "command": "npx",
-      "args": ["-y", "@dkp5897/sql-server-mcp"],
+      "args": ["-y", "@dkcodingcenter/sql-server-mcp"],
       "env": {
         "DB_CONNECTIONS": "[{\"name\":\"sweet-shop\",\"label\":\"PradeepSweetShop Dev\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"PradeepSweetShopDb\",\"user\":\"sa\",\"password\":\"dkp@5897\"},{\"name\":\"ecommerce\",\"label\":\"ECommerce Dev\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"ECommerceDB\",\"user\":\"sa\",\"password\":\"dkp@5897\"}]"
       }
@@ -32,7 +32,7 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
   "mcpServers": {
     "sql-server-mcp": {
       "command": "npx",
-      "args": ["-y", "@dkp5897/sql-server-mcp"],
+      "args": ["-y", "@dkcodingcenter/sql-server-mcp"],
       "env": {
         "DB_SERVER": "localhost",
         "DB_NAME": "PradeepSweetShopDb",

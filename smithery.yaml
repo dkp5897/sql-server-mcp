@@ -28,7 +28,7 @@ startCommand:
   command: npx
   args:
     - "-y"
-    - "@dkp5897/sql-server-mcp"
+    - "@dkcodingcenter/sql-server-mcp"
   env:
     DB_CONNECTIONS: "${config.DB_CONNECTIONS}"
     DB_SERVER: "${config.DB_SERVER}"
