@@ -1,13 +1,16 @@
 # SQL Server MCP Server
 
-A **Model Context Protocol (MCP) server** for SQL Server — built for development debugging and data issue resolution.
-Connects to Antigravity (the AI agent) so you can diagnose and fix data problems directly from your IDE chat.
+A **Model Context Protocol (MCP) server** for SQL Server — built for development debugging and multi-database data repair.
+Connects to Antigravity (the AI agent) so you can inspect schemas, run queries, and diagnose data problems across multiple databases directly from your IDE chat.
 
 ---
 
 ## 🚀 Setup & Configuration
 
-Configure the server directly inside your Antigravity (or any MCP client) configuration using environment variables:
+You can configure single or multiple SQL Server databases directly in your Antigravity (or any MCP client) configuration:
+
+### Option A: Multiple Databases (`DB_CONNECTIONS` JSON Array)
+Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections on startup:
 
 ```json
 {
@@ -16,8 +19,23 @@ Configure the server directly inside your Antigravity (or any MCP client) config
       "command": "npx",
       "args": ["-y", "@dkp5897/sql-server-mcp"],
       "env": {
+        "DB_CONNECTIONS": "[{\"name\":\"sweet-shop\",\"label\":\"PradeepSweetShop Dev\",\"server\":\"localhost\",\"database\":\"PradeepSweetShopDb\",\"user\":\"sa\",\"password\":\"dkp@5897\"},{\"name\":\"ecommerce\",\"label\":\"ECommerce Dev\",\"server\":\"localhost\",\"database\":\"ECommerceDB\",\"user\":\"sa\",\"password\":\"dkp@5897\"}]"
+      }
+    }
+  }
+}
+```
+
+### Option B: Single Database Configuration
+```json
+{
+  "mcpServers": {
+    "sql-server-mcp": {
+      "command": "npx",
+      "args": ["-y", "@dkp5897/sql-server-mcp"],
+      "env": {
         "DB_SERVER": "localhost",
-        "DB_NAME": "YourDatabaseName",
+        "DB_NAME": "PradeepSweetShopDb",
         "DB_USER": "sa",
         "DB_PASSWORD": "your_password",
         "DB_PORT": "1433",
@@ -28,34 +46,31 @@ Configure the server directly inside your Antigravity (or any MCP client) config
 }
 ```
 
-### Environment Variables Reference
-| Variable | Description | Default |
-|---|---|---|
-| `DB_SERVER` / `SQL_SERVER` | SQL Server host / instance name | `localhost` |
-| `DB_NAME` / `SQL_DATABASE` | Database name | `master` |
-| `DB_USER` / `SQL_USER` | SQL Server username | `sa` |
-| `DB_PASSWORD` / `SQL_PASSWORD` | SQL Server password | `""` |
-| `DB_PORT` / `SQL_PORT` | SQL Server port | `1433` |
-| `DB_TRUST_CERT` / `SQL_TRUST_CERT` | Trust self-signed certificate | `true` |
-| `DB_ENCRYPT` | Enable TLS encryption | `false` |
-
 ---
 
-## 🛠️ Available Tools (13 total)
+## 🛠️ Available Tools (17 total)
+
+### Connection Management
+| Tool | Description |
+|---|---|
+| `sql_list_connections` | List all loaded SQL Server connection profiles and see which one is active |
+| `sql_switch_connection` | Switch default active connection to another loaded profile by name |
+| `sql_add_connection` | Dynamically add or update a named connection profile during chat session |
+| `sql_remove_connection` | Remove a connection profile |
 
 ### Query Execution
 | Tool | Description |
 |---|---|
-| `sql_run_query` | Run a SELECT query — executes immediately |
+| `sql_run_query` | Run a SELECT query (accepts optional `connection` name parameter) |
 | `sql_run_write` | Run INSERT/UPDATE/DELETE/DDL — **shows preview first, requires confirm=true to execute** |
 
 ### Schema Inspection
 | Tool | Description |
 |---|---|
-| `sql_list_tables` | List all tables (with row counts) |
+| `sql_list_tables` | List all tables with row counts |
 | `sql_inspect_table` | Full table details: columns, PKs, FKs, indexes |
 | `sql_list_stored_procs` | List all stored procedures |
-| `sql_get_stored_proc_def` | Get the source code of a stored procedure |
+| `sql_get_stored_proc_def` | Get stored procedure source code |
 
 ### Data Diagnostics
 | Tool | Description |
@@ -66,7 +81,7 @@ Configure the server directly inside your Antigravity (or any MCP client) config
 | `sql_check_nulls` | Find NULL values in specified columns |
 | `sql_compare_counts` | Compare parent/child table counts to find gaps |
 | `sql_diagnose_issue` | Full diagnostic report on a table |
-| `sql_get_query_plan` | Get execution plan for a slow query |
+| `sql_get_query_plan` | Get execution plan for a query |
 
 ---
 
@@ -83,19 +98,17 @@ Configure the server directly inside your Antigravity (or any MCP client) config
 
 ## 💡 Example Questions to Ask the Agent
 
-- *"List all tables in the database"*
-- *"Inspect the Orders table"*
-- *"Find all rows in OrderItems where ProductId is NULL"*
-- *"Are there any foreign key violations in the Payments table?"*
-- *"Show me 10 sample rows from Customers where IsActive = 0"*
+- *"List all configured SQL connections"*
+- *"Switch SQL connection to ecommerce"*
+- *"Run a query `SELECT TOP 5 * FROM Payments` on connection ecommerce"*
+- *"Compare row counts between Products and Categories in sweet-shop"*
 - *"Run a full diagnostic on the Orders table"*
-- *"Update the 3 orders with NULL CustomerId — set them to CustomerId = 1"*
 
 ---
 
 ## 📦 Publishing to npm
 
-To publish your own version to npm:
+To publish updates to npm:
 ```bash
 npm login
 npm publish --access public

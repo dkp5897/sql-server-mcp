@@ -3,12 +3,10 @@ startCommand:
   type: stdio
   configSchema:
     type: object
-    required:
-      - DB_SERVER
-      - DB_NAME
-      - DB_USER
-      - DB_PASSWORD
     properties:
+      DB_CONNECTIONS:
+        type: string
+        description: "JSON array string of multiple connections, e.g. [{\"name\":\"dev\",\"server\":\"localhost\",\"database\":\"DevDb\",\"user\":\"sa\",\"password\":\"pass\"}]"
       DB_SERVER:
         type: string
         description: "SQL Server host or instance name (e.g. localhost or 192.168.1.10)"
@@ -32,6 +30,7 @@ startCommand:
     - "-y"
     - "@dkp5897/sql-server-mcp"
   env:
+    DB_CONNECTIONS: "${config.DB_CONNECTIONS}"
     DB_SERVER: "${config.DB_SERVER}"
     DB_NAME: "${config.DB_NAME}"
     DB_USER: "${config.DB_USER}"

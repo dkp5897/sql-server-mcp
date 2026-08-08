@@ -6,6 +6,7 @@ const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
 const { CallToolRequestSchema, ListToolsRequestSchema } = require("@modelcontextprotocol/sdk/types.js");
 
+const connectionsTools = require("./tools/connections");
 const queryTools = require("./tools/query");
 const inspectTools = require("./tools/inspect");
 const diagnoseTools = require("./tools/diagnose");
@@ -14,6 +15,7 @@ const { closeAllPools } = require("./db/connection");
 
 // ─── Aggregate all tools ───────────────────────────────────────────────────────
 const ALL_TOOLS = [
+  ...connectionsTools.TOOLS,
   ...queryTools.TOOLS,
   ...inspectTools.TOOLS,
   ...diagnoseTools.TOOLS,
@@ -21,6 +23,7 @@ const ALL_TOOLS = [
 
 // ─── Tool dispatcher ───────────────────────────────────────────────────────────
 async function dispatchTool(name, args) {
+  if (connectionsTools.TOOLS.some((t) => t.name === name)) return connectionsTools.handle(name, args);
   if (queryTools.TOOLS.some((t) => t.name === name)) return queryTools.handle(name, args);
   if (inspectTools.TOOLS.some((t) => t.name === name)) return inspectTools.handle(name, args);
   if (diagnoseTools.TOOLS.some((t) => t.name === name)) return diagnoseTools.handle(name, args);
@@ -29,7 +32,7 @@ async function dispatchTool(name, args) {
 
 // ─── Create MCP Server ─────────────────────────────────────────────────────────
 const server = new Server(
-  { name: "sql-server-mcp", version: "1.0.3" },
+  { name: "sql-server-mcp", version: "1.1.0" },
   { capabilities: { tools: {} } }
 );
 
