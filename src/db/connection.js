@@ -1,5 +1,5 @@
 // connection.js — Multi-Connection SQL Server Pool & Profile Manager
-// Configured via environment variables (DB1_*/DB2_* prefixes, DB_CONNECTIONS JSON array, or single DB_SERVER/DB_NAME/etc.)
+// Configured via environment variables (DB_CONNECTIONS JSON array or single DB_SERVER/DB_NAME/etc.)
 // Supports active connection switching and multi-database execution.
 
 const sql = require("mssql");
@@ -41,29 +41,7 @@ function initFromEnv() {
     }
   }
 
-  // 2. Check for numbered environment variables (DB1_SERVER, DB2_SERVER, etc.)
-  for (let i = 1; i <= 20; i++) {
-    const s = process.env[`DB${i}_SERVER`] || process.env[`SQL${i}_SERVER`];
-    if (s) {
-      const connName = process.env[`DB${i}_NAME`] || process.env[`SQL${i}_NAME`] || `db${i}`;
-      profiles.set(connName, {
-        name: connName,
-        label: process.env[`DB${i}_LABEL`] || `${connName} (${s} → ${process.env[`DB${i}_DATABASE`] || process.env[`DB${i}_DB`] || "master"})`,
-        server: s,
-        port: parseInt(process.env[`DB${i}_PORT`] || process.env[`SQL${i}_PORT`] || "1433", 10),
-        database: process.env[`DB${i}_DATABASE`] || process.env[`DB${i}_DB`] || process.env[`SQL${i}_DATABASE`] || "master",
-        user: process.env[`DB${i}_USER`] || process.env[`SQL${i}_USER`] || "sa",
-        password: process.env[`DB${i}_PASSWORD`] || process.env[`SQL${i}_PASSWORD`] || "",
-        options: {
-          trustServerCertificate: process.env[`DB${i}_TRUST_CERT`] !== "false",
-          encrypt: process.env[`DB${i}_ENCRYPT`] === "true",
-        },
-      });
-      if (!activeConnectionName) activeConnectionName = connName;
-    }
-  }
-
-  // 3. Check for single environment variables (DB_SERVER / SQL_SERVER)
+  // 2. Check for single environment variables (DB_SERVER / SQL_SERVER)
   const envServer = process.env.DB_SERVER || process.env.SQL_SERVER;
   if (envServer && !profiles.has("default")) {
     const defaultProfile = {
@@ -83,7 +61,7 @@ function initFromEnv() {
     if (!activeConnectionName) activeConnectionName = "default";
   }
 
-  // 4. Fallback default if nothing was provided
+  // 3. Fallback default if nothing was provided
   if (profiles.size === 0) {
     profiles.set("default", {
       name: "default",
