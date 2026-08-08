@@ -1,15 +1,40 @@
 // connection.js — Multi-Connection SQL Server Pool & Profile Manager
-// Configured via environment variables (DB_CONNECTIONS JSON array or single DB_SERVER/DB_NAME/etc.)
+// Configured via DB_CONNECTIONS JSON string, CONNECTIONS_FILE path/local connections.json, or DB_SERVER/DB_NAME env vars.
 // Supports active connection switching and multi-database execution.
 
 const sql = require("mssql");
+const fs = require("fs");
+const path = require("path");
 
 // In-memory state
 const pools = new Map();      // connectionName -> ConnectionPool
 const profiles = new Map();   // connectionName -> profile object
 let activeConnectionName = "";
 
-// Initialize profiles from environment variables on startup
+// Helper to register connection profiles from a parsed array
+function loadProfilesFromArray(connList) {
+  for (const item of connList) {
+    const name = item.name || item.id || item.database || `conn-${profiles.size + 1}`;
+    if (!profiles.has(name)) {
+      profiles.set(name, {
+        name,
+        label: item.label || `${name} (${item.server || "localhost"} → ${item.database})`,
+        server: item.server || "localhost",
+        port: parseInt(item.port || "1433", 10),
+        database: item.database || "master",
+        user: item.user || item.username || "sa",
+        password: item.password || "",
+        options: {
+          trustServerCertificate: item.trustServerCertificate !== false && item.trustCert !== false,
+          encrypt: item.encrypt === true,
+        },
+      });
+      if (!activeConnectionName) activeConnectionName = name;
+    }
+  }
+}
+
+// Initialize profiles from environment variables or file on startup
 function initFromEnv() {
   profiles.clear();
 
@@ -18,30 +43,26 @@ function initFromEnv() {
   if (jsonConns) {
     try {
       const parsed = JSON.parse(jsonConns);
-      const connList = Array.isArray(parsed) ? parsed : [parsed];
-      for (const item of connList) {
-        const name = item.name || item.id || item.database || `conn-${profiles.size + 1}`;
-        profiles.set(name, {
-          name,
-          label: item.label || `${name} (${item.server || "localhost"} → ${item.database})`,
-          server: item.server || "localhost",
-          port: parseInt(item.port || "1433", 10),
-          database: item.database || "master",
-          user: item.user || item.username || "sa",
-          password: item.password || "",
-          options: {
-            trustServerCertificate: item.trustServerCertificate !== false && item.trustCert !== false,
-            encrypt: item.encrypt === true,
-          },
-        });
-        if (!activeConnectionName) activeConnectionName = name;
-      }
+      loadProfilesFromArray(Array.isArray(parsed) ? parsed : [parsed]);
     } catch (err) {
       process.stderr.write(`Warning: Failed to parse DB_CONNECTIONS JSON: ${err.message}\n`);
     }
   }
 
-  // 2. Check for single environment variables (DB_SERVER / SQL_SERVER)
+  // 2. Check for CONNECTIONS_FILE env variable or local connections.json file
+  const fileEnv = process.env.CONNECTIONS_FILE || process.env.DB_CONNECTIONS_FILE;
+  const filePath = fileEnv || (fs.existsSync(path.join(process.cwd(), "connections.json")) ? path.join(process.cwd(), "connections.json") : null);
+  if (filePath && fs.existsSync(filePath)) {
+    try {
+      const content = fs.readFileSync(filePath, "utf-8");
+      const parsed = JSON.parse(content);
+      loadProfilesFromArray(Array.isArray(parsed) ? parsed : [parsed]);
+    } catch (err) {
+      process.stderr.write(`Warning: Failed to parse connections file '${filePath}': ${err.message}\n`);
+    }
+  }
+
+  // 3. Check for single environment variables (DB_SERVER / SQL_SERVER)
   const envServer = process.env.DB_SERVER || process.env.SQL_SERVER;
   if (envServer && !profiles.has("default")) {
     const defaultProfile = {
@@ -61,7 +82,7 @@ function initFromEnv() {
     if (!activeConnectionName) activeConnectionName = "default";
   }
 
-  // 3. Fallback default if nothing was provided
+  // 4. Fallback default if nothing was provided
   if (profiles.size === 0) {
     profiles.set("default", {
       name: "default",

@@ -7,10 +7,51 @@ Connects to Antigravity (the AI agent) so you can inspect schemas, run queries, 
 
 ## 🚀 Setup & Configuration
 
-You can configure single or multiple SQL Server databases directly in your Antigravity (or any MCP client) configuration:
+You can configure single or multiple SQL Server databases directly using any of these 3 clean methods:
 
-### Option A: Multiple Databases (`DB_CONNECTIONS` JSON Array)
-Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections on startup:
+### Method 1: Using a `connections.json` File (Easiest & Cleanest!) 🌟
+Create a `connections.json` file in your workspace directory (or set `CONNECTIONS_FILE` in `env` pointing to your JSON file path). Write your database connections in clean JSON array format without any escaping:
+
+```json
+[
+  {
+    "name": "sweet-shop",
+    "label": "PradeepSweetShop Dev",
+    "server": "localhost\\SQLEXPRESS",
+    "database": "PradeepSweetShopDb",
+    "user": "sa",
+    "password": "your_password"
+  },
+  {
+    "name": "ecommerce",
+    "label": "ECommerce Dev",
+    "server": "localhost\\SQLEXPRESS",
+    "database": "ECommerceDB",
+    "user": "sa",
+    "password": "your_password"
+  }
+]
+```
+
+And configure `mcp_config.json`:
+```json
+{
+  "mcpServers": {
+    "sql-server-mcp": {
+      "command": "npx",
+      "args": ["-y", "@dkcodingcenter/sql-server-mcp"],
+      "env": {
+        "CONNECTIONS_FILE": "C:/path/to/connections.json"
+      }
+    }
+  }
+}
+```
+
+---
+
+### Method 2: Environment Variable (`DB_CONNECTIONS` JSON Array)
+Pass a JSON array string directly in `DB_CONNECTIONS`:
 
 ```json
 {
@@ -26,7 +67,9 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
 }
 ```
 
-### Option B: Single Database Configuration
+---
+
+### Method 3: Single Database Configuration
 ```json
 {
   "mcpServers": {
@@ -37,9 +80,7 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
         "DB_SERVER": "localhost",
         "DB_NAME": "PradeepSweetShopDb",
         "DB_USER": "sa",
-        "DB_PASSWORD": "your_password",
-        "DB_PORT": "1433",
-        "DB_TRUST_CERT": "true"
+        "DB_PASSWORD": "your_password"
       }
     }
   }
