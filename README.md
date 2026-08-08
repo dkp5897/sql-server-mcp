@@ -19,7 +19,7 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
       "command": "npx",
       "args": ["-y", "@dkcodingcenter/sql-server-mcp"],
       "env": {
-        "DB_CONNECTIONS": "[{\"name\":\"sweet-shop\",\"label\":\"PradeepSweetShop Dev\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"PradeepSweetShopDb\",\"user\":\"sa\",\"password\":\"dkp@5897\"},{\"name\":\"ecommerce\",\"label\":\"ECommerce Dev\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"ECommerceDB\",\"user\":\"sa\",\"password\":\"dkp@5897\"}]"
+        "DB_CONNECTIONS": "[{\"name\":\"sweet-shop\",\"label\":\"PradeepSweetShop Dev\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"PradeepSweetShopDb\",\"user\":\"sa\",\"password\":\"your_password\"},{\"name\":\"ecommerce\",\"label\":\"ECommerce Dev\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"ECommerceDB\",\"user\":\"sa\",\"password\":\"your_password\"}]"
       }
     }
   }
