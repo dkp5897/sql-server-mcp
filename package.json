@@ -1,6 +1,6 @@
 {
   "name": "@dkp5897/sql-server-mcp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "SQL Server MCP Server for Antigravity — environment-configured dev debugging & data repair",
   "main": "src/index.js",
   "bin": {

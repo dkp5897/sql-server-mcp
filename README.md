@@ -9,8 +9,8 @@ Connects to Antigravity (the AI agent) so you can inspect schemas, run queries, 
 
 You can configure single or multiple SQL Server databases directly in your Antigravity (or any MCP client) configuration:
 
-### Option A: Multiple Databases (`DB_CONNECTIONS` JSON Array)
-Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections on startup:
+### Option A: Clean Numbered Environment Variables (`DB1_*`, `DB2_*`, etc.) — Recommended! 🌟
+No JSON string escaping needed! You can configure multiple databases cleanly using numbered prefixes:
 
 ```json
 {
@@ -19,14 +19,41 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
       "command": "npx",
       "args": ["-y", "@dkp5897/sql-server-mcp"],
       "env": {
-        "DB_CONNECTIONS": "[{\"name\":\"sweet-shop\",\"label\":\"PradeepSweetShop Dev\",\"server\":\"localhost\",\"database\":\"PradeepSweetShopDb\",\"user\":\"sa\",\"password\":\"dkp@5897\"},{\"name\":\"ecommerce\",\"label\":\"ECommerce Dev\",\"server\":\"localhost\",\"database\":\"ECommerceDB\",\"user\":\"sa\",\"password\":\"dkp@5897\"}]"
+        "DB1_NAME": "sweet-shop",
+        "DB1_SERVER": "localhost\\SQLEXPRESS",
+        "DB1_DATABASE": "PradeepSweetShopDb",
+        "DB1_USER": "sa",
+        "DB1_PASSWORD": "your_password",
+
+        "DB2_NAME": "ecommerce",
+        "DB2_SERVER": "192.168.1.50",
+        "DB2_DATABASE": "ECommerceDB",
+        "DB2_USER": "sa",
+        "DB2_PASSWORD": "your_password"
       }
     }
   }
 }
 ```
 
-### Option B: Single Database Configuration
+### Option B: JSON Array (`DB_CONNECTIONS`)
+Alternatively, pass a JSON array string:
+
+```json
+{
+  "mcpServers": {
+    "sql-server-mcp": {
+      "command": "npx",
+      "args": ["-y", "@dkp5897/sql-server-mcp"],
+      "env": {
+        "DB_CONNECTIONS": "[{\"name\":\"sweet-shop\",\"server\":\"localhost\\\\SQLEXPRESS\",\"database\":\"PradeepSweetShopDb\",\"user\":\"sa\",\"password\":\"your_pass\"},{\"name\":\"ecommerce\",\"server\":\"192.168.1.50\",\"database\":\"ECommerceDB\",\"user\":\"sa\",\"password\":\"your_pass\"}]"
+      }
+    }
+  }
+}
+```
+
+### Option C: Single Database Configuration
 ```json
 {
   "mcpServers": {
@@ -37,9 +64,7 @@ Pass a JSON array in `DB_CONNECTIONS` to register multiple database connections 
         "DB_SERVER": "localhost",
         "DB_NAME": "PradeepSweetShopDb",
         "DB_USER": "sa",
-        "DB_PASSWORD": "your_password",
-        "DB_PORT": "1433",
-        "DB_TRUST_CERT": "true"
+        "DB_PASSWORD": "your_password"
       }
     }
   }
